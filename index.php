@@ -124,6 +124,58 @@ foreach ($entry as $film) {
     array_push($realisateur, trim($film['im:artist']['label']));
 }
 
-$categoryCount = array_count_values($category);
-$numberCat = "0";
-$topCategory = "0";
+$realCount = array_count_values($realisateur);
+$maxReal = max($realCount);
+
+foreach ($realCount as $item => $value) {
+    if($value == $maxReal) {
+        echo "La categorie la plus présente est: " . $item . ".<br>";
+    }
+}
+
+// Acheter le top 10 et le louer
+
+$sent = 0;
+$rent = 0;
+
+for($x = 0; $x < 10; $x++) {
+    $sent = $sent + $entry[$x]['im:price']['attributes']['amount'];
+    $rent = $rent + $entry[$x]['im:rentalPrice']['attributes']['amount'];
+}
+
+echo "Le prix d'achat pour le top 10 des films est de: " . $sent . " dollars <br>";
+echo "Le prix de location pour le top 10 des films est de: " . $rent . " dollars <br>";
+
+// Mois le plus de sortie
+
+$months = [];
+foreach ($entry as $film) {
+    $month = strtotime($film['im:releaseDate']['attributes']['label']);
+    array_push($months, strftime("%B", $month));
+}
+
+$monthsCount = array_count_values($months);
+$maxMonth = max($monthsCount);
+
+foreach ($monthsCount as $item => $value) {
+    if($value == $maxMonth) {
+        echo "La mois avec le plus de sortie est le mois de: " . $item . ".<br>";
+    }
+}
+echo "<br><br>";
+//Top 10 films budgets
+
+$downPrices = [];
+foreach ($entry as $film) {
+    $downPrices[$film['im:name']['label']] = $film['im:price']['attributes']['amount'];
+}
+
+asort($downPrices);
+$val = 0;
+
+foreach ($downPrices as $item => $price) {
+    if($val < 10) {
+        echo ($val + 1) . ": " . $item . " à " . $price . " dollars <br>";
+        $val++;
+    }
+}
